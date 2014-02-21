@@ -7,8 +7,6 @@ RegexProvider
 
 The RegexProvider project contains a type providers for regular expressions.
 
-* [CommonFolders](CommonFolders.html)
-
 <div class="row">
   <div class="span1"></div>
   <div class="span6">
