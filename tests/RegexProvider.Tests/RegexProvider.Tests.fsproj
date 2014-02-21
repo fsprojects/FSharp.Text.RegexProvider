@@ -68,15 +68,6 @@
     <Reference Include="RegexProvider">
       <HintPath>..\..\bin\RegexProvider.dll</HintPath>
     </Reference>
-    <Reference Include="RegexProvider.PowerShell">
-      <HintPath>..\..\bin\RegexProvider.PowerShell.dll</HintPath>
-    </Reference>
-    <Reference Include="RegexProvider.WMI">
-      <HintPath>..\..\bin\RegexProvider.WMI.dll</HintPath>
-    </Reference>
-    <Reference Include="RegexProvider.WMI.DesignTime">
-      <HintPath>..\..\bin\RegexProvider.WMI.DesignTime.dll</HintPath>
-    </Reference>
     <Reference Include="FsUnit.NUnit">
       <HintPath>..\..\packages\FsUnit.1.2.1.0\Lib\Net40\FsUnit.NUnit.dll</HintPath>
       <Private>True</Private>
