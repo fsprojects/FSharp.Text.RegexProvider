@@ -5,4 +5,5 @@ The RegexProvider project contains a type providers for regular expresissions. <
 
 ## Building
 
-* Run build.cmd
+* Mono: Run *build.sh*  [![Mono build status](https://travis-ci.org/fsprojects/RegexProvider.png)](https://travis-ci.org/fsprojects/RegexProvider)
+* Windows: Run *build.cmd* 
