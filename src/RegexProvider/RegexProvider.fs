@@ -25,6 +25,16 @@ let internal typedRegex() =
                             GetterCode = (fun args -> <@@ (%%args.[0]:Match).Groups.[group] @@>))
                     property.AddXmlDoc(sprintf @"Gets the ""%s"" group from this match" group)
                     matchType.AddMember property
+
+                let matchMethod =
+                    ProvidedMethod(
+                        methodName = "NextMatch",
+                        parameters = [],
+                        returnType = matchType,
+                        InvokeCode = (fun args -> <@@ (%%args.[0]:Match).NextMatch() @@>))
+                matchMethod.AddXmlDoc "Searches the specified input string for the next occurrence of this regular expression."
+
+                matchType.AddMember matchMethod
                 
 
                 let regexType = erasedType<Regex> thisAssembly rootNamespace typeName

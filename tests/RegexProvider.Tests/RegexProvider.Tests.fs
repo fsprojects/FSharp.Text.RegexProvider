@@ -33,3 +33,14 @@ let ``Can return multiple matches``() =
     |> Seq.map (fun x -> x.AreaCode.Value)
     |> List.ofSeq
     |> should equal ["425"; "426"; "427"]
+
+
+[<Test>]
+let ``Can return next matches``() =
+    let m = MultiplePhoneRegex().Match("425-123-2345, 426-123-2346, 427-123-2347")
+    m.AreaCode.Value
+    |> should equal "425"
+
+    let m' = m.NextMatch()
+    m'.AreaCode.Value
+    |> should equal "426"

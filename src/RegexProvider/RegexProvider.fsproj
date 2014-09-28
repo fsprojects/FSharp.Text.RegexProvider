@@ -26,7 +26,7 @@
     </DocumentationFile>
     <StartAction>Program</StartAction>
     <StartProgram>C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\devenv.exe</StartProgram>
-    <StartArguments>C:\code\RegexProvider\RegexProvider.Tests.sln</StartArguments>
+    <StartArguments>D:\code\RegexProvider\RegexProvider.Tests.sln</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
