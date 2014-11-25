@@ -41,7 +41,7 @@ let (|Upper|_|) = satisfies Char.IsUpper
 let (|Lower|_|) = satisfies Char.IsLower
 
 /// Turns a string into a nice PascalCase identifier
-let niceName (set:System.Collections.Generic.HashSet<_>) =     
+let niceName (set:System.Collections.Concurrent.ConcurrentDictionary<_, unit>) =     
     fun (s: string) ->
         if s = s.ToUpper() then s else
         // Starting to parse a new segment 
@@ -75,7 +75,7 @@ let niceName (set:System.Collections.Generic.HashSet<_>) =
                         yield sub.[0].ToString().ToUpper() + sub.ToLower().Substring(1) }
             |> String.concat ""
 
-        while set.Contains name do 
+        while set.ContainsKey name do 
           let mutable lastLetterPos = String.length name - 1
           while Char.IsDigit name.[lastLetterPos] && lastLetterPos > 0 do
             lastLetterPos <- lastLetterPos - 1
@@ -86,7 +86,7 @@ let niceName (set:System.Collections.Generic.HashSet<_>) =
           else
             let number = name.Substring(lastLetterPos + 1)
             name <- name.Substring(0, lastLetterPos + 1) + (UInt64.Parse number + 1UL).ToString()
-        set.Add name |> ignore
+        set.TryAdd (name,()) |> ignore
         name
 
 
@@ -99,7 +99,7 @@ let findConfigFile resolutionFolder configFileName =
 let erasedType<'T> assemblyName rootNamespace typeName = 
     ProvidedTypeDefinition(assemblyName, rootNamespace, typeName, Some(typeof<'T>))
 
-let generalTypeSet = System.Collections.Generic.HashSet()
+let generalTypeSet = System.Collections.Concurrent.ConcurrentDictionary()
 
 let runtimeType<'T> typeName = ProvidedTypeDefinition(niceName generalTypeSet typeName, Some typeof<'T>)
 
