@@ -1,3 +1,6 @@
+#### 0.0.4 - 27.11.2014
+* Fix intellisense hang due to race condition -  https://github.com/fsprojects/RegexProvider/issues/8
+
 #### 0.0.3 - 28.09.2014
 * Return provided Match type from Match.NextMatch() - https://github.com/fsprojects/RegexProvider/issues/4
 
