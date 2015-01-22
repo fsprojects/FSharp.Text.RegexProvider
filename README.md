@@ -1,4 +1,7 @@
-RegexProvider
+[![Issue Stats](http://issuestats.com/github/fsprojects/RegexProvider/badge/issue)](http://issuestats.com/github/fsprojects/RegexProvider)
+[![Issue Stats](http://issuestats.com/github/fsprojects/RegexProvider/badge/pr)](http://issuestats.com/github/fsprojects/RegexProvider)
+
+RegexProvider [![NuGet Status](http://img.shields.io/nuget/v/RegexProvider.svg?style=flat)](https://www.nuget.org/packages/RegexProvider/)
 =============
 
 The RegexProvider project contains a type providers for regular expresissions. <a href="http://fsprojects.github.io/RegexProvider" target="_blank">Documentation available here.</a>
