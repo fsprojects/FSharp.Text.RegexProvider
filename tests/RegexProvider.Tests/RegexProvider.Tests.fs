@@ -1,6 +1,7 @@
 module FSharp.RegexProvider.Tests.RegexProviderTests
 
 open NUnit.Framework
+open System.Text.RegularExpressions
 open FSharp.RegexProvider
 open FsUnit
 
@@ -10,6 +11,14 @@ type PhoneRegex = Regex< @"(?<AreaCode>^\d{3})-(?<PhoneNumber>\d{3}-\d{4}$)">
 let ``Can call typed IsMatch function``() =      
     PhoneRegex.IsMatch "425-123-2345"
     |> should equal true
+
+[<Test>] 
+let ``The default regex options are None``() =      
+    PhoneRegex().Options |> should equal RegexOptions.None
+
+[<Test>] 
+let ``The regex options are passed``() =      
+    PhoneRegex(RegexOptions.Compiled).Options |> should equal RegexOptions.Compiled
 
 [<Test>] 
 let ``Can call typed CompleteMatch function``() =      

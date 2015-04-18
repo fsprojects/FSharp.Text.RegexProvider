@@ -82,6 +82,13 @@ let internal typedRegex() =
                 ctor.AddXmlDoc "Initializes a regular expression instance"
                 regexType.AddMember ctor
 
+                let ctor =
+                    ProvidedConstructor(
+                        parameters = [ProvidedParameter("options", typeof<RegexOptions>)],
+                        InvokeCode = (fun args -> <@@ Regex(pattern, %%args.[0]) @@>))
+                ctor.AddXmlDoc "Initializes a regular expression instance, with options that modify the pattern."                
+                regexType.AddMember ctor
+
                 regexType
             | _ -> failwith "unexpected parameter values"))
     regexType
