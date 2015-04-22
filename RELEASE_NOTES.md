@@ -1,3 +1,6 @@
+#### 0.0.5 - 22.04.2015
+* Add constructor overload that takes regex options - https://github.com/fsprojects/RegexProvider/issues/10
+
 #### 0.0.4 - 27.11.2014
 * Fix intellisense hang due to race condition -  https://github.com/fsprojects/RegexProvider/issues/8
 
