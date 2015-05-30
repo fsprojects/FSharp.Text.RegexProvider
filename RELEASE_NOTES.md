@@ -1,3 +1,6 @@
+#### 0.0.7 - 30.05.2015
+* Renamed to FSharp.Text.RegexProvider and updated links to project site - https://github.com/fsprojects/FSharp.Text.RegexProvider/issues/11
+
 #### 0.0.6 - 30.05.2015
 * Renamed to FSharp.Text.RegexProvider - https://github.com/fsprojects/FSharp.Text.RegexProvider/issues/11
 
