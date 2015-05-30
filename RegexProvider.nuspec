@@ -5,7 +5,7 @@
     <version>@build.number@</version>
     <authors>@authors@</authors>
     <owners>@authors@</owners>
-    <licenseUrl>http://github.com/fsprojects/FSharp.Text.RegexProvider/blob/master/LICENSE.txt</licenseUrl>
+    <licenseUrl>http://github.com/fsprojects/FSharp.Text.RegexProvider/blob/master/LICENSE</licenseUrl>
     <projectUrl>http://fsprojects.github.com/FSharp.Text.RegexProvider</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <summary>@summary@</summary>
