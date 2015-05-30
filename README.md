@@ -1,7 +1,7 @@
 [![Issue Stats](http://issuestats.com/github/fsProjects/FSharp.Text.RegexProvider/badge/issue)](http://issuestats.com/github/fsProjects/FSharp.Text.RegexProvider)
 [![Issue Stats](http://issuestats.com/github/fsProjects/FSharp.Text.RegexProvider/badge/pr)](http://issuestats.com/github/fsProjects/FSharp.Text.RegexProvider)
 
-RegexProvider [![NuGet Status](http://img.shields.io/nuget/v/RegexProvider.svg?style=flat)](https://www.nuget.org/packages/FSharp.Text.RegexProvider/)
+RegexProvider [![NuGet Status](http://img.shields.io/nuget/v/FSharp.Text.RegexProvider.svg?style=flat)](https://www.nuget.org/packages/FSharp.Text.RegexProvider/)
 =============
 
 The RegexProvider project contains a type providers for regular expresissions. <a href="http://fsprojects.github.io/FSharp.Text.RegexProvider" target="_blank">Documentation available here.</a>
