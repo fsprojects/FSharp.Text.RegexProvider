@@ -48,8 +48,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="RegexProvider">
-      <HintPath>..\..\bin\RegexProvider.dll</HintPath>
+    <Reference Include="FSharp.Text.RegexProvider">
+      <HintPath>..\..\bin\FSharp.Text.RegexProvider.dll</HintPath>
     </Reference>
     <Reference Include="FsUnit.NUnit">
       <HintPath>..\..\packages\FsUnit.1.2.1.0\Lib\Net40\FsUnit.NUnit.dll</HintPath>

@@ -12,6 +12,7 @@ open System
 
 let projects = [|"RegexProvider"|]
 
+let projectName = "FSharp.Text.RegexProvider"
 let summary = "A type provider for regular expressions."
 let description = "A type provider for regular expressions."
 let authors = ["Steffen Forkmann"; "David Tchepak"; "Sergey Tihon"; "Daniel Mohl"; "Tomas Petricek"; "Ryan Riley"; "Mauricio Scheffer"; "Phil Trelford"; "Vasily Kirichenko" ]
@@ -21,8 +22,8 @@ let solutionFile  = "RegexProvider"
 
 let testAssemblies = "tests/**/bin/Release/*.Tests*.dll"
 let gitHome = "https://github.com/fsprojects"
-let gitName = "RegexProvider"
-let cloneUrl = "git@github.com:fsprojects/RegexProvider.git"
+let gitName = "FSharp.Text.RegexProvider"
+let cloneUrl = "git@github.com:fsprojects/FSharp.Text.RegexProvider.git"
 let nugetDir = "./nuget/"
 
 // Read additional information from the release notes document
@@ -34,8 +35,8 @@ Target "AssemblyInfo" (fun _ ->
   for project in projects do
     let fileName = "src/" + project + "/AssemblyInfo.fs"
     CreateFSharpAssemblyInfo fileName
-        [ Attribute.Title project
-          Attribute.Product project
+        [ Attribute.Title projectName
+          Attribute.Product projectName
           Attribute.Description summary
           Attribute.Version release.AssemblyVersion
           Attribute.FileVersion release.AssemblyVersion ] 
@@ -107,7 +108,7 @@ Target "NuGet" (fun _ ->
     NuGet (fun p -> 
         { p with   
             Authors = authors
-            Project = project
+            Project = projectName
             Summary = summary
             Description = description
             Version = release.NugetVersion

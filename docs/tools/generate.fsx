@@ -4,15 +4,15 @@
 // --------------------------------------------------------------------------------------
 
 // Binaries that have XML documentation (in a corresponding generated XML file)
-let referenceBinaries = [ "RegexProvider.dll" ]
+let referenceBinaries = [ "FSharp.Text.RegexProvider.dll" ]
 // Web site location for the generated documentation
 let website = "/RegexProvider"
 
 // Specify more information about your project
 let info =
-  [ "project-name", "RegexProvider"
+  [ "project-name", "FSharp.Text.RegexProvider"
     "project-author", "Steffen Forkmann"
-    "project-summary", "Various type providers for management of the machine."
+    "project-summary", "A type provider for regular expressions."
     "project-github", "http://github.com/fsprojects/RegexProvider"
     "project-nuget", "https://www.nuget.org/packages/RegexProvider" ]
 

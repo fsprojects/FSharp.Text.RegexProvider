@@ -1,8 +1,8 @@
-module FSharp.RegexProvider.Tests.RegexProviderTests
+module FSharp.Text.RegexProvider.Tests.RegexProviderTests
 
 open NUnit.Framework
 open System.Text.RegularExpressions
-open FSharp.RegexProvider
+open FSharp.Text.RegexProvider
 open FsUnit
 
 type PhoneRegex = Regex< @"(?<AreaCode>^\d{3})-(?<PhoneNumber>\d{3}-\d{4}$)">

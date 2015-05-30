@@ -1,3 +1,6 @@
+#### 0.0.6 - 30.05.2015
+* Renamed to FSharp.Text.RegexProvider - https://github.com/fsprojects/FSharp.Text.RegexProvider/issues/11
+
 #### 0.0.5 - 22.04.2015
 * Add constructor overload that takes regex options - https://github.com/fsprojects/RegexProvider/issues/10
 

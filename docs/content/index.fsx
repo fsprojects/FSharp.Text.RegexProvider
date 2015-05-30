@@ -2,17 +2,17 @@
 #I "../../bin"
 
 (**
-RegexProvider
+FSharp.Text.RegexProvider
 ===========================
 
-The RegexProvider project contains a type providers for regular expressions.
+The FSharp.Text.RegexProvider project contains a type provider for regular expressions.
 
 <div class="row">
   <div class="span1"></div>
   <div class="span6">
     <div class="well well-small" id="nuget">
-      The library can be <a href="https://nuget.org/packages/RegexProvider">installed from NuGet</a>:
-      <pre>PM> Install-Package RegexProvider</pre>
+      The library can be <a href="https://nuget.org/packages/FSharp.Text.RegexProvider">installed from NuGet</a>:
+      <pre>PM> Install-Package FSharp.Text.RegexProvider</pre>
     </div>
   </div>
   <div class="span1"></div>
@@ -25,8 +25,8 @@ This example demonstrates the use of the type provider:
 
 *)
 // reference the type provider dll
-#r "RegexProvider.dll"
-open FSharp.RegexProvider
+#r "FSharp.Text.RegexProvider.dll"
+open FSharp.Text.RegexProvider
 
 // Let the type provider do it's work
 type PhoneRegex = Regex< @"(?<AreaCode>^\d{3})-(?<PhoneNumber>\d{3}-\d{4}$)">
@@ -53,9 +53,9 @@ The library is available under Public Domain license, which allows modification 
 redistribution for both commercial and non-commercial purposes. For more information see the 
 [License file][license] in the GitHub repository. 
 
-  [content]: https://github.com/fsprojects/RegexProvider/tree/master/docs/content
-  [gh]: https://github.com/fsprojects/RegexProvider
-  [issues]: https://github.com/fsprojects/RegexProvider/issues
-  [readme]: https://github.com/fsprojects/RegexProvider/blob/master/README.md
-  [license]: https://github.com/fsprojects/RegexProvider/blob/master/LICENSE.txt
+  [content]: https://github.com/fsprojects/FSharp.Text.RegexProvider/tree/master/docs/content
+  [gh]: https://github.com/fsprojects/FSharp.Text.RegexProvider
+  [issues]: https://github.com/fsprojects/FSharp.Text.RegexProvider/issues
+  [readme]: https://github.com/fsprojects/FSharp.Text.RegexProvider/blob/master/README.md
+  [license]: https://github.com/fsprojects/FSharp.Text.RegexProvider/blob/master/LICENSE.txt
 *)

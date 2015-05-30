@@ -8,7 +8,7 @@
     <ProjectGuid>7e90d6ce-a10b-4858-a5bc-41df7250cbca</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>RegexProvider</RootNamespace>
-    <AssemblyName>RegexProvider</AssemblyName>
+    <AssemblyName>FSharp.Text.RegexProvider</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFSharpCoreVersion>4.3.0.0</TargetFSharpCoreVersion>
     <Name>RegexProvider</Name>
@@ -27,6 +27,8 @@
     <StartAction>Program</StartAction>
     <StartProgram>C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\devenv.exe</StartProgram>
     <StartArguments>D:\code\RegexProvider\RegexProvider.Tests.sln</StartArguments>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsAsErrors />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -35,7 +37,9 @@
     <OutputPath>..\..\bin</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>..\..\bin\RegexProvider.XML</DocumentationFile>
+    <DocumentationFile>..\..\bin\FSharp.Text.RegexProvider.XML</DocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsAsErrors />
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
