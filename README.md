@@ -8,7 +8,7 @@ The RegexProvider project contains a type providers for regular expresissions. <
 
 ## Building
 
-* Mono: Run *build.sh*  [![Mono build status](https://travis-ci.org/fsprojects/RegexProvider.png)](https://travis-ci.org/fsProjects/RegexProvider)
+* Mono: Run *build.sh*  [![Mono build status](https://travis-ci.org/fsprojects/FSharp.Text.RegexProvider.png)](https://travis-ci.org/fsProjects/FSharp.Text.RegexProvider)
 * Windows: Run *build.cmd* 
 
 ## Maintainer(s)
