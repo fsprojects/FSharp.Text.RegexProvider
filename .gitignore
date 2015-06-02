@@ -175,3 +175,5 @@ nuget/
 # Nuget outputs
 nuget/*.nupkg
 .paket/paket.exe
+docs/content/license.md
+docs/content/release-notes.md

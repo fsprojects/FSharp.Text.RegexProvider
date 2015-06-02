@@ -6,7 +6,7 @@
 // Binaries that have XML documentation (in a corresponding generated XML file)
 let referenceBinaries = [ "FSharp.Text.RegexProvider.dll" ]
 // Web site location for the generated documentation
-let website = "/RegexProvider"
+let website = "/FSharp.Text.RegexProvider"
 
 let githubLink = "http://github.com/fsprojects/FSharp.Text.RegexProvider"
 
