@@ -3,6 +3,7 @@ source https://nuget.org/api/v2
 nuget Nuget.CommandLine
 nuget FsUnit
 nuget NUnit
+nuget NUnit.Runners
 nuget FAKE
 nuget FSharp.Formatting
 nuget FSharp.Core
