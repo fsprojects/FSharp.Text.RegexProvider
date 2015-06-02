@@ -1,0 +1,7 @@
+source https://nuget.org/api/v2
+
+nuget Nuget.CommandLine
+nuget FsUnit
+nuget NUnit
+nuget FAKE
+nuget FSharp.Formatting

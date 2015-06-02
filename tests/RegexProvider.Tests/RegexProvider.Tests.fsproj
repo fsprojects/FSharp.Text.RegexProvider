@@ -14,7 +14,6 @@
     <Name>RegexProvider.Tests</Name>
     <TargetFrameworkProfile />
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
-    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -45,7 +44,7 @@
   <ItemGroup>
     <Compile Include="FsUnit.fs" />
     <Compile Include="RegexProvider.Tests.fs" />
-    <None Include="packages.config" />
+    <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="FSharp.Text.RegexProvider">
@@ -86,4 +85,5 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <Import Project="..\..\.paket\paket.targets" />
 </Project>
