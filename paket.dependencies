@@ -5,3 +5,4 @@ nuget FsUnit
 nuget NUnit
 nuget FAKE
 nuget FSharp.Formatting
+nuget FSharp.Core
