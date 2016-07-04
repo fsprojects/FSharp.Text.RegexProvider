@@ -53,3 +53,30 @@ let ``Can return next matches``() =
     let m' = m.NextMatch()
     m'.AreaCode.Value
     |> should equal "426"
+
+type WordRegex = Regex< @"(?<Word>\w+)", "Typed" >
+
+[<Test>] 
+let ``Can call typed TypedMatches function``() =      
+    let matcher = WordRegex().TypedMatches
+    let matches = matcher @"The fox jumps over the lazy dog"
+    let words = matches |> Seq.map (fun m -> m.Word.Value)
+    words |> should equal ["The";"fox";"jumps";"over";"the";"lazy";"dog"]
+
+let inline extractWords regex text =
+    let matches: ^m seq = (^r: (member TypedMatches: string -> ^m seq) (regex, text))
+    let getGroup m = (^m: (member get_Word: unit -> System.Text.RegularExpressions.Group) m)
+    matches |> Seq.map (fun m -> (getGroup m).Value)
+
+type WordRegex2 = Regex< @"(?<Word>fox|dog)", "Typed" >
+
+[<Test>] 
+let ``Inline function can be called on several typed regexes``() =
+    let input = @"The fox jumps over the lazy dog"
+    let wordExtractor1 = extractWords (WordRegex())
+    let words1 = wordExtractor1 input
+    words1 |> should equal ["The";"fox";"jumps";"over";"the";"lazy";"dog"]
+
+    let wordExtractor2 = extractWords (WordRegex2())
+    let words2 = wordExtractor2 input
+    words2 |> should equal ["fox";"dog"]
