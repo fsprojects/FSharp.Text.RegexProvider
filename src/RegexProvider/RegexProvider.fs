@@ -14,16 +14,15 @@ module internal TypedRegex =
             parameters =
                 [
                     ProvidedStaticParameter("pattern", typeof<string>)
-                    ProvidedStaticParameter("generatedMethodsPrefix", typeof<string>, "")
+                    ProvidedStaticParameter("noMethodPrefix", typeof<bool>, false)
                 ], 
             instantiationFunction = (fun typeName parameterValues ->
                 match parameterValues with 
-                | [| :? string as pattern; :? string as generatedMethodsPrefix |] ->
-                    let generatedMethodsPrefix =
-                        if System.String.IsNullOrWhiteSpace(generatedMethodsPrefix) then ""
-                        else generatedMethodsPrefix.Trim()
+                | [| :? string as pattern; :? bool as noMethodPrefix |] ->
 
-                    let getMethodName baseName = generatedMethodsPrefix + baseName
+                    let getMethodName baseName =
+                        if noMethodPrefix then baseName
+                        else sprintf "Typed%s" baseName
 
                     let matchType = runtimeType<Match> "MatchType"
                     matchType.HideObjectMethods <- true
