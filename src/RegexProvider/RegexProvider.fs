@@ -11,10 +11,19 @@ module internal TypedRegex =
     let typedRegex() = 
         let regexType = erasedType<Regex> thisAssembly rootNamespace "Regex"
         regexType.DefineStaticParameters(
-            parameters = [ProvidedStaticParameter("pattern", typeof<string>)], 
+            parameters =
+                [
+                    ProvidedStaticParameter("pattern", typeof<string>)
+                    ProvidedStaticParameter("noMethodPrefix", typeof<bool>, false)
+                ], 
             instantiationFunction = (fun typeName parameterValues ->
                 match parameterValues with 
-                | [| :? string as pattern |] -> 
+                | [| :? string as pattern; :? bool as noMethodPrefix |] ->
+
+                    let getMethodName baseName =
+                        if noMethodPrefix then baseName
+                        else sprintf "Typed%s" baseName
+
                     let matchType = runtimeType<Match> "MatchType"
                     matchType.HideObjectMethods <- true
 
@@ -29,7 +38,7 @@ module internal TypedRegex =
 
                     let matchMethod =
                         ProvidedMethod(
-                            methodName = "NextMatch",
+                            methodName = getMethodName "NextMatch",
                             parameters = [],
                             returnType = matchType,
                             InvokeCode = (fun args -> <@@ (%%args.[0]:Match).NextMatch() @@>))
@@ -46,7 +55,7 @@ module internal TypedRegex =
 
                     let isMatchMethod =
                         ProvidedMethod(
-                            methodName = "IsMatch",
+                            methodName = getMethodName "IsMatch",
                             parameters = [ProvidedParameter("input", typeof<string>)],
                             returnType = typeof<bool>,
                             InvokeCode = (fun args -> <@@ Regex.IsMatch(%%args.[0], pattern) @@>),
@@ -57,7 +66,7 @@ module internal TypedRegex =
 
                     let matchMethod =
                         ProvidedMethod(
-                            methodName = "Match",
+                            methodName = getMethodName "Match",
                             parameters = [ProvidedParameter("input", typeof<string>)],
                             returnType = matchType,
                             InvokeCode = (fun args -> <@@ (%%args.[0]:Regex).Match(%%args.[1]) @@>))
@@ -67,7 +76,7 @@ module internal TypedRegex =
 
                     let matchesMethod =
                         ProvidedMethod(
-                            methodName = "Matches",
+                            methodName = getMethodName "Matches",
                             parameters = [ProvidedParameter("input", typeof<string>)],
                             returnType = seqType matchType,
                             InvokeCode = (fun args -> <@@ (%%args.[0]:Regex).Matches(%%args.[1]) |> Seq.cast<Match> @@>))

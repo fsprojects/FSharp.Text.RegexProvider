@@ -5,7 +5,7 @@ open System.Text.RegularExpressions
 open FSharp.Text.RegexProvider
 open FsUnit
 
-type PhoneRegex = Regex< @"(?<AreaCode>^\d{3})-(?<PhoneNumber>\d{3}-\d{4}$)">
+type PhoneRegex = Regex< @"(?<AreaCode>^\d{3})-(?<PhoneNumber>\d{3}-\d{4}$)", noMethodPrefix = true >
 
 [<Test>] 
 let ``Can call typed IsMatch function``() =      
@@ -35,7 +35,7 @@ let ``Can return PhoneNumber property in simple phone number``() =
     PhoneRegex().Match("425-123-2345").PhoneNumber.Value
     |> should equal "123-2345"
 
-type MultiplePhoneRegex = Regex< @"\b(?<AreaCode>\d{3})-(?<PhoneNumber>\d{3}-\d{4})\b" >
+type MultiplePhoneRegex = Regex< @"\b(?<AreaCode>\d{3})-(?<PhoneNumber>\d{3}-\d{4})\b", noMethodPrefix = true >
 [<Test>]
 let ``Can return multiple matches``() =
     MultiplePhoneRegex().Matches("425-123-2345, 426-123-2346, 427-123-2347")
@@ -53,3 +53,30 @@ let ``Can return next matches``() =
     let m' = m.NextMatch()
     m'.AreaCode.Value
     |> should equal "426"
+
+type WordRegex = Regex< @"(?<Word>\w+)" >
+
+[<Test>] 
+let ``Can call typed TypedMatches function``() =      
+    let matcher = WordRegex().TypedMatches
+    let matches = matcher @"The fox jumps over the lazy dog"
+    let words = matches |> Seq.map (fun m -> m.Word.Value)
+    words |> should equal ["The";"fox";"jumps";"over";"the";"lazy";"dog"]
+
+let inline extractWords regex text =
+    let matches: ^m seq = (^r: (member TypedMatches: string -> ^m seq) (regex, text))
+    let getGroup m = (^m: (member get_Word: unit -> System.Text.RegularExpressions.Group) m)
+    matches |> Seq.map (fun m -> (getGroup m).Value)
+
+type WordRegex2 = Regex< @"(?<Word>fox|dog)" >
+
+[<Test>] 
+let ``Inline function can be called on several typed regexes``() =
+    let input = @"The fox jumps over the lazy dog"
+    let wordExtractor1 = extractWords (WordRegex())
+    let words1 = wordExtractor1 input
+    words1 |> should equal ["The";"fox";"jumps";"over";"the";"lazy";"dog"]
+
+    let wordExtractor2 = extractWords (WordRegex2())
+    let words2 = wordExtractor2 input
+    words2 |> should equal ["fox";"dog"]
