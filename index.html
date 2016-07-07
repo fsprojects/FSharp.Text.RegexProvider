@@ -72,12 +72,12 @@
 <span class="prep">#r</span> <span class="s">&quot;FSharp.Text.RegexProvider.dll&quot;</span>
 <span class="k">open</span> <span onmouseout="hideTip(event, 'fs1', 1)" onmouseover="showTip(event, 'fs1', 1)" class="i">FSharp</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs2', 2)" onmouseover="showTip(event, 'fs2', 2)" class="i">Text</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs3', 3)" onmouseover="showTip(event, 'fs3', 3)" class="i">RegexProvider</span>
 
-<span class="c">// Let the type provider do it&#39;s work</span>
-<span class="k">type</span> <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="t">PhoneRegex</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="t">Regex</span><span class="o">&lt;</span> <span class="s">@&quot;(?&lt;AreaCode&gt;^\d{3})-(?&lt;PhoneNumber&gt;\d{3}-\d{4}$)&quot;</span><span class="o">&gt;</span>
+<span class="c">// Let the type provider do its work</span>
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs4', 4)" onmouseover="showTip(event, 'fs4', 4)" class="t">PhoneRegex</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs5', 5)" onmouseover="showTip(event, 'fs5', 5)" class="t">Regex</span><span class="o">&lt;</span> <span class="s">@&quot;(?&lt;AreaCode&gt;^\d{3})-(?&lt;PhoneNumber&gt;\d{3}-\d{4}$)&quot;</span> <span class="o">&gt;</span>
 
 
 <span class="c">// now you have typed access to the regex groups and you can browse it via Intellisense</span>
-<span onmouseout="hideTip(event, 'fs4', 6)" onmouseover="showTip(event, 'fs4', 6)" class="t">PhoneRegex</span>()<span class="o">.</span><span class="f">Match</span>(<span class="s">&quot;425-123-2345&quot;</span>)<span class="o">.</span><span class="i">AreaCode</span><span class="o">.</span><span class="i">Value</span>
+<span onmouseout="hideTip(event, 'fs4', 6)" onmouseover="showTip(event, 'fs4', 6)" class="t">PhoneRegex</span>()<span class="o">.</span><span class="f">TypedMatch</span>(<span class="s">&quot;425-123-2345&quot;</span>)<span class="o">.</span><span class="i">AreaCode</span><span class="o">.</span><span class="i">Value</span>
 
 <span class="fsi">val it : string = &quot;425&quot;</span>
 </pre>
@@ -86,6 +86,34 @@
 </table>
 
 <p><img src="img/RegexProvider.png" alt="alt text" title="Intellisense for regular expressions" /></p>
+
+<p>Note that since version 1.0, generated methods are prefixed by <code>Typed</code> by default.
+You can disable this behaviour using the parameter <code>noMethodPrefix</code>:</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+<span class="l">5: </span>
+<span class="l">6: </span>
+<span class="l">7: </span>
+<span class="l">8: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="k">type</span> <span onmouseout="hideTip(event, 'fs6', 7)" onmouseover="showTip(event, 'fs6', 7)" class="t">MultiplePhoneRegex</span> <span class="o">=</span> <span onmouseout="hideTip(event, 'fs5', 8)" onmouseover="showTip(event, 'fs5', 8)" class="t">Regex</span><span class="o">&lt;</span> <span class="s">@&quot;\b(?&lt;AreaCode&gt;\d{3})-(?&lt;PhoneNumber&gt;\d{3}-\d{4})\b&quot;</span>, <span class="i">noMethodPrefix</span> <span class="o">=</span> <span class="k">true</span> <span class="o">&gt;</span>
+
+<span class="c">// now the generated types are just added as an overload of the existing method name on the `Regex` type</span>
+<span onmouseout="hideTip(event, 'fs6', 9)" onmouseover="showTip(event, 'fs6', 9)" class="t">MultiplePhoneRegex</span>()<span class="o">.</span><span class="f">Matches</span>(<span class="s">&quot;425-123-2345, 426-123-2346, 427-123-2347&quot;</span>)
+<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs7', 10)" onmouseover="showTip(event, 'fs7', 10)" class="t">Seq</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs8', 11)" onmouseover="showTip(event, 'fs8', 11)" class="f">map</span> (<span class="k">fun</span> <span onmouseout="hideTip(event, 'fs9', 12)" onmouseover="showTip(event, 'fs9', 12)" class="i">x</span> <span class="k">-&gt;</span> <span onmouseout="hideTip(event, 'fs9', 13)" onmouseover="showTip(event, 'fs9', 13)" class="i">x</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs10', 14)" onmouseover="showTip(event, 'fs10', 14)" class="i">AreaCode</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs11', 15)" onmouseover="showTip(event, 'fs11', 15)" class="i">Value</span>)
+<span class="o">|&gt;</span> <span onmouseout="hideTip(event, 'fs12', 16)" onmouseover="showTip(event, 'fs12', 16)" class="t">List</span><span class="o">.</span><span onmouseout="hideTip(event, 'fs13', 17)" onmouseover="showTip(event, 'fs13', 17)" class="f">ofSeq</span>
+
+<span class="fsi">val it : string list = [&quot;425&quot;; &quot;426&quot;; &quot;427&quot;]</span>
+</pre>
+</td>
+</tr>
+</table>
 
 <h2><a name="Contributing-and-copyright" class="anchor" href="#Contributing-and-copyright">Contributing and copyright</a></h2>
 
@@ -103,6 +131,14 @@ redistribution for both commercial and non-commercial purposes. For more informa
 <div class="tip" id="fs3">namespace FSharp.Text.RegexProvider</div>
 <div class="tip" id="fs4">type PhoneRegex = Regex&lt;...&gt;<br /><br />Full name: Index.PhoneRegex</div>
 <div class="tip" id="fs5">type Regex =<br />&#160;&#160;inherit Regex<br />&#160;&#160;member Options : RegexOptions<br />&#160;&#160;member RightToLeft : bool<br />&#160;&#160;val capnames : Hashtable<br />&#160;&#160;val caps : Hashtable<br />&#160;&#160;val capsize : int<br />&#160;&#160;val capslist : string []<br />&#160;&#160;val factory : RegexRunnerFactory<br />&#160;&#160;val pattern : string<br />&#160;&#160;val roptions : RegexOptions<br />&#160;&#160;...<br /><br />Full name: FSharp.Text.RegexProvider.Regex</div>
+<div class="tip" id="fs6">type MultiplePhoneRegex = Regex&lt;...&gt;<br /><br />Full name: Index.MultiplePhoneRegex</div>
+<div class="tip" id="fs7">module Seq<br /><br />from Microsoft.FSharp.Collections</div>
+<div class="tip" id="fs8">val map : mapping:(&#39;T -&gt; &#39;U) -&gt; source:seq&lt;&#39;T&gt; -&gt; seq&lt;&#39;U&gt;<br /><br />Full name: Microsoft.FSharp.Collections.Seq.map</div>
+<div class="tip" id="fs9">val x : Regex&lt;...&gt;.MatchType5</div>
+<div class="tip" id="fs10">property Regex&lt;...&gt;.MatchType5.AreaCode: System.Text.RegularExpressions.Group<br /><em><br /><br />Gets the &quot;AreaCode&quot; group from this match</em></div>
+<div class="tip" id="fs11">property System.Text.RegularExpressions.Capture.Value: string</div>
+<div class="tip" id="fs12">Multiple items<br />module List<br /><br />from Microsoft.FSharp.Collections<br /><br />--------------------<br />type List&lt;&#39;T&gt; =<br />&#160;&#160;| ( [] )<br />&#160;&#160;| ( :: ) of Head: &#39;T * Tail: &#39;T list<br />&#160;&#160;interface IEnumerable<br />&#160;&#160;interface IEnumerable&lt;&#39;T&gt;<br />&#160;&#160;member GetSlice : startIndex:int option * endIndex:int option -&gt; &#39;T list<br />&#160;&#160;member Head : &#39;T<br />&#160;&#160;member IsEmpty : bool<br />&#160;&#160;member Item : index:int -&gt; &#39;T with get<br />&#160;&#160;member Length : int<br />&#160;&#160;member Tail : &#39;T list<br />&#160;&#160;static member Cons : head:&#39;T * tail:&#39;T list -&gt; &#39;T list<br />&#160;&#160;static member Empty : &#39;T list<br /><br />Full name: Microsoft.FSharp.Collections.List&lt;_&gt;</div>
+<div class="tip" id="fs13">val ofSeq : source:seq&lt;&#39;T&gt; -&gt; &#39;T list<br /><br />Full name: Microsoft.FSharp.Collections.List.ofSeq</div>
 
         </div>
         <div class="span3">
