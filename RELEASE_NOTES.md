@@ -1,3 +1,6 @@
+#### 1.0.0 - 07.07.2016
+* Added a `Typed` prefix to generated methods - https://github.com/fsprojects/FSharp.Text.RegexProvider/issues/16
+
 #### 0.0.7 - 30.05.2015
 * Renamed to FSharp.Text.RegexProvider and updated links to project site - https://github.com/fsprojects/FSharp.Text.RegexProvider/issues/11
 

@@ -28,18 +28,33 @@ This example demonstrates the use of the type provider:
 #r "FSharp.Text.RegexProvider.dll"
 open FSharp.Text.RegexProvider
 
-// Let the type provider do it's work
-type PhoneRegex = Regex< @"(?<AreaCode>^\d{3})-(?<PhoneNumber>\d{3}-\d{4}$)">
+// Let the type provider do its work
+type PhoneRegex = Regex< @"(?<AreaCode>^\d{3})-(?<PhoneNumber>\d{3}-\d{4}$)" >
 
 
 // now you have typed access to the regex groups and you can browse it via Intellisense
-PhoneRegex().Match("425-123-2345").AreaCode.Value
+PhoneRegex().TypedMatch("425-123-2345").AreaCode.Value
 
 // [fsi:val it : string = "425"]
 
 (**
 
 ![alt text](img/RegexProvider.png "Intellisense for regular expressions")
+
+Note that since version 1.0, generated methods are prefixed by `Typed` by default.
+You can disable this behaviour using the parameter `noMethodPrefix`:
+*)
+
+type MultiplePhoneRegex = Regex< @"\b(?<AreaCode>\d{3})-(?<PhoneNumber>\d{3}-\d{4})\b", noMethodPrefix = true >
+
+// now the generated types are just added as an overload of the existing method name on the `Regex` type
+MultiplePhoneRegex().Matches("425-123-2345, 426-123-2346, 427-123-2347")
+|> Seq.map (fun x -> x.AreaCode.Value)
+|> List.ofSeq
+
+// [fsi:val it : string list = ["425"; "426"; "427"]]
+
+(**
 
 Contributing and copyright
 --------------------------
