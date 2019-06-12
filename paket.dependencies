@@ -1,9 +1,22 @@
-source https://nuget.org/api/v2
 
-nuget Nuget.CommandLine
+source https://api.nuget.org/v3/index.json
+
+nuget Microsoft.NET.Test.Sdk
 nuget FsUnit
 nuget NUnit
 nuget NUnit.Runners
-nuget FAKE
-nuget FSharp.Formatting
 nuget FSharp.Core
+nuget NUnit3TestAdapter
+nuget NETStandard.Library.NETFramework
+
+github fsprojects/FSharp.TypeProviders.SDK src/ProvidedTypes.fsi
+github fsprojects/FSharp.TypeProviders.SDK src/ProvidedTypes.fs
+
+group docs
+frameworks: netstandard2.0
+generate_load_scripts: true
+source https://api.nuget.org/v3/index.json
+nuget FSharp.Core 
+nuget FSharp.Literate 
+nuget Fable.React
+nuget FSharp.Compiler.Tools

@@ -1,6 +1,8 @@
 language: csharp
 
-sudo: false  # use the new container-based Travis infrastructure 
-
+sudo: true  # use the new container-based Travis infrastructure 
+dist: bionic 
+mono: latest
+dotnet: 2.2.203
 script: 
   - ./build.sh All

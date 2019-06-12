@@ -1,13 +1,39 @@
+open Fake.SystemHelper
 // --------------------------------------------------------------------------------------
 // FAKE build script 
 // --------------------------------------------------------------------------------------
 
-#I @"packages/FAKE/tools/"
-#r @"packages/FAKE/tools/FakeLib.dll"
+// #I @"packages/FAKE/tools/"
+// #r @"packages/FAKE/tools/FakeLib.dll"
+#r "paket:
+storage: none
+source https://api.nuget.org/v3/index.json
+
+nuget Fake.Core
+nuget Fake.Core.ReleaseNotes
+nuget Fake.Core.Target
+nuget Fake.Core.Trace
+nuget Fake.DotNet.AssemblyInfoFile
+nuget Fake.Dotnet.Cli
+nuget Fake.DotNet.Fsi
+nuget Fake.Tools.Git
+nuget Fake.DotNet.Paket //"
+
+#load ".fake/build.fsx/intellisense.fsx"
+#if !FAKE
+#r "netstandard"
+#endif
+
 open Fake 
-open Fake.Git
-open Fake.AssemblyInfoFile
-open Fake.ReleaseNotesHelper
+open Fake.Tools.Git
+open Fake.Core
+open Fake.Core.TargetOperators
+open Fake.Tools.Git.Repository
+open Fake.IO
+open Fake.DotNet
+open Fake.IO.FileSystemOperators
+open Fake.IO.Globbing.Operators
+open Fake.DotNet.NuGet
 open System
 open System.IO
 
@@ -16,8 +42,6 @@ let projects = [|"RegexProvider"|]
 let projectName = "FSharp.Text.RegexProvider"
 let summary = "A type provider for regular expressions."
 let description = "A type provider for regular expressions."
-let authors = ["Steffen Forkmann"; "David Tchepak"; "Sergey Tihon"; "Daniel Mohl"; "Tomas Petricek"; "Ryan Riley"; "Mauricio Scheffer"; "Phil Trelford"; "Vasily Kirichenko" ]
-let tags = "F# fsharp typeproviders regex"
 
 let solutionFile  = "RegexProvider"
 
@@ -29,145 +53,145 @@ let nugetDir = "./nuget/"
 
 // Read additional information from the release notes document
 Environment.CurrentDirectory <- __SOURCE_DIRECTORY__
-let release = parseReleaseNotes (IO.File.ReadAllLines "RELEASE_NOTES.md")
+let release = ReleaseNotes.load "RELEASE_NOTES.md"
 
 // Generate assembly info files with the right version & up-to-date information
-Target "AssemblyInfo" (fun _ ->
+Target.create "AssemblyInfo" (fun _ ->
   for project in projects do
     let fileName = "src/" + project + "/AssemblyInfo.fs"
-    CreateFSharpAssemblyInfo fileName
-        [ Attribute.Title projectName
-          Attribute.Product projectName
-          Attribute.Description summary
-          Attribute.Version release.AssemblyVersion
-          Attribute.FileVersion release.AssemblyVersion ] 
+    AssemblyInfoFile.createFSharp
+        fileName
+        [ AssemblyInfo.Title projectName
+          AssemblyInfo.Product projectName
+          AssemblyInfo.Description summary
+          AssemblyInfo.Version release.AssemblyVersion
+          AssemblyInfo.FileVersion release.AssemblyVersion ] 
 )
 
 // --------------------------------------------------------------------------------------
 // Clean build results 
 
-Target "Clean" (fun _ ->
-    CleanDirs ["bin"; "temp"; nugetDir]
+Target.create "Clean" (fun _ ->
+    Shell.cleanDirs ["bin"; "temp"; nugetDir]
 )
 
-Target "CleanDocs" (fun _ ->
-    CleanDirs ["docs/output"]
+Target.create "CleanDocs" (fun _ ->
+    Shell.cleanDirs ["docs/output"]
 )
 
 // --------------------------------------------------------------------------------------
 // Build library & test project
 
-Target "Build" (fun _ ->
-    !! (solutionFile + ".sln")
-    |> MSBuildRelease "" "Rebuild"
-    |> ignore
+Target.create "Build" (fun _ ->
+    DotNet.build (fun p -> 
+        { p with 
+            Configuration = DotNet.BuildConfiguration.Release
+         } )
+        "src/RegexProvider/"
 
-    !! (solutionFile + ".Tests.sln")
-    |> MSBuildRelease "" "Rebuild"
-    |> ignore
+    DotNet.publish (fun p -> 
+        { p with 
+            Configuration = DotNet.BuildConfiguration.Release
+            Framework = Some "netstandard2.0"
+            OutputPath = Some "../../bin/netstandard2.0"
+         } )
+        "src/RegexProvider/"
+    DotNet.publish (fun p -> 
+        { p with 
+            Configuration = DotNet.BuildConfiguration.Release
+            Framework = Some "net461"
+            OutputPath = Some "../../bin/net461" } )
+        "src/RegexProvider/"
+
+    DotNet.build (fun p -> 
+        { p with 
+            Configuration = DotNet.BuildConfiguration.Release
+         } )
+        "tests/RegexProvider.Tests/"
 )
 
 // --------------------------------------------------------------------------------------
 // Run the unit tests using test runner & kill test runner when complete
 
-Target "RunTests" (fun _ ->
-    ActivateFinalTarget "CloseTestRunner"
 
-    !! testAssemblies
-    |> NUnit (fun p ->
-        { p with
-            DisableShadowCopy = true
-            TimeOut = TimeSpan.FromMinutes 20.
-            OutputFile = "TestResults.xml" })
-)
-
-FinalTarget "CloseTestRunner" (fun _ ->  
-    ProcessHelper.killProcess "nunit-agent.exe"
+Target.create "RunTests" (fun _ ->
+    DotNet.test (fun p -> {
+        p with
+            Configuration = DotNet.BuildConfiguration.Release
+        }) "tests/RegexProvider.Tests"
 )
 
 // --------------------------------------------------------------------------------------
 // Build a NuGet package
 
-Target "NuGet" (fun _ ->
-    // Format the description to fit on a single line (remove \r\n and double-spaces)
-    let description = description.Replace("\r", "")
-                                 .Replace("\n", "")
-                                 .Replace("  ", " ")
-    let project = projects.[0]
+Target.create "NuGet" (fun _ ->
+    let toolPath =
+        if File.Exists ".paket/paket" then
+            ".paket/paket"
+        else
+            ".paket/paket.exe"
 
-    let nugetDocsDir = nugetDir @@ "docs"
-    let nugetlibDir = nugetDir @@ "lib/net40"
-
-    CleanDir nugetDocsDir
-    CleanDir nugetlibDir
-        
-    CopyDir nugetlibDir "bin" (fun file -> file.Contains "FSharp.Core." |> not)
-    CopyDir nugetDocsDir "./docs/output" allFiles
-    
-    NuGet (fun p -> 
-        { p with   
-            Authors = authors
-            Project = projectName
-            Summary = summary
-            Description = description
+    Paket.pack (fun p ->
+        { p with 
+            OutputPath = "bin/nuget"
+            ReleaseNotes = release.Notes |> String.toLines
             Version = release.NugetVersion
-            ReleaseNotes = release.Notes |> toLines
-            Tags = tags
-            OutputPath = nugetDir
-            AccessKey = getBuildParamOrDefault "nugetkey" ""
-            Publish = hasBuildParam "nugetkey"
-            Dependencies = [] })
-        (project + ".nuspec")
+            ToolPath = toolPath
+            BuildConfig = "release" })
+
+    if Environment.hasEnvironVar "nugetkey" then
+        !! ("bin/nuget/*.nupkg")
+        |> Paket.pushFiles (fun p ->
+            { p with ApiKey = Environment.environVar "nugetkey" 
+                     ToolPath = toolPath } )
+    
 )
 
 // --------------------------------------------------------------------------------------
 // Generate the documentation
 
-Target "GenerateReferenceDocs" (fun _ ->
-    if not <| executeFSIWithArgs "docs/tools" "generate.fsx" ["--define:RELEASE"; "--define:REFERENCE"] [] then
-      failwith "generating reference documentation failed"
-)
-
 let generateHelp' fail debug =
-    let args =
-        if debug then ["--define:HELP"]
-        else ["--define:RELEASE"; "--define:HELP"]
-    if executeFSIWithArgs "docs/tools" "generate.fsx" args [] then
-        traceImportant "Help generated"
+    let ret, errors = Fake.DotNet.Fsi.exec (fun p -> 
+        let fsiPath = __SOURCE_DIRECTORY__ + "/packages/docs/FSharp.Compiler.Tools/tools/fsi.exe"
+        { p with WorkingDirectory = "." 
+                 ToolPath = Fsi.FsiTool.External fsiPath} ) "docs/tools/generate.fsx" []
+    if ret = 0 then
+        Trace.traceImportant "Help generated"
     else
         if fail then
             failwith "generating help documentation failed"
         else
-            traceImportant "generating help documentation failed"
+            Trace.traceImportant "generating help documentation failed"
+    ()
 
 let generateHelp fail =
     generateHelp' fail false
 
-Target "GenerateHelp" (fun _ ->
-    DeleteFile "docs/content/release-notes.md"
-    CopyFile "docs/content/" "RELEASE_NOTES.md"
-    Rename "docs/content/release-notes.md" "docs/content/RELEASE_NOTES.md"
+Target.create "GenerateHelp" (fun _ ->
+    Shell.rm "docs/content/release-notes.md"
+    Shell.copyFile "docs/content/" "RELEASE_NOTES.md"
+    Shell.rename "docs/content/release-notes.md" "docs/content/RELEASE_NOTES.md"
 
-    DeleteFile "docs/content/license.md"
-    CopyFile "docs/content/" "LICENSE.txt"
-    Rename "docs/content/license.md" "docs/content/LICENSE.txt"
+    Shell.rm "docs/content/license.md"
+    Shell.copyFile "docs/content/" "LICENSE.txt"
+    Shell.rename "docs/content/license.md" "docs/content/LICENSE.txt"
 
     generateHelp true
 )
 
-Target "GenerateHelpDebug" (fun _ ->
-    DeleteFile "docs/content/release-notes.md"
-    CopyFile "docs/content/" "RELEASE_NOTES.md"
-    Rename "docs/content/release-notes.md" "docs/content/RELEASE_NOTES.md"
+Target.create "GenerateHelpDebug" (fun _ ->
+    Shell.rm "docs/content/release-notes.md"
+    Shell.copyFile "docs/content/" "RELEASE_NOTES.md"
+    Shell.rename "docs/content/release-notes.md" "docs/content/RELEASE_NOTES.md"
 
-    DeleteFile "docs/content/license.md"
-    CopyFile "docs/content/" "LICENSE.txt"
-    Rename "docs/content/license.md" "docs/content/LICENSE.txt"
+    Shell.rm "docs/content/license.md"
+    Shell.copyFile "docs/content/" "LICENSE.txt"
+    Shell.rename "docs/content/license.md" "docs/content/LICENSE.txt"
 
     generateHelp' true true
 )
 
-Target "KeepRunning" (fun _ ->    
+Target.create "KeepRunning" (fun _ ->    
     use watcher = new FileSystemWatcher(DirectoryInfo("docs/content").FullName,"*.*")
     watcher.EnableRaisingEvents <- true
     watcher.Changed.Add(fun e -> generateHelp false)
@@ -175,7 +199,7 @@ Target "KeepRunning" (fun _ ->
     watcher.Renamed.Add(fun e -> generateHelp false)
     watcher.Deleted.Add(fun e -> generateHelp false)
 
-    traceImportant "Waiting for help edits. Press any key to stop."
+    Trace.traceImportant "Waiting for help edits. Press any key to stop."
 
     System.Console.ReadKey() |> ignore
 
@@ -183,45 +207,43 @@ Target "KeepRunning" (fun _ ->
     watcher.Dispose()
 )
 
-Target "GenerateDocs" DoNothing
+Target.create "GenerateDocs" ignore
 
 // --------------------------------------------------------------------------------------
 // Release Scripts
 
-Target "ReleaseDocs" (fun _ ->
+Target.create "ReleaseDocs" (fun _ ->
     let tempDocsDir = "temp/gh-pages"
-    CleanDir tempDocsDir
+    Shell.cleanDir tempDocsDir
     Repository.cloneSingleBranch "" cloneUrl "gh-pages" tempDocsDir
 
     fullclean tempDocsDir
-    CopyRecursive "docs/output" tempDocsDir true |> tracefn "%A"
-    StageAll tempDocsDir
-    Commit tempDocsDir (sprintf "Update generated documentation for version %s" release.NugetVersion)
+    Shell.copyRecursive "docs/output" tempDocsDir true |> Trace.tracefn "%A"
+    Staging.stageAll tempDocsDir
+    Commit.exec tempDocsDir (sprintf "Update generated documentation for version %s" release.NugetVersion)
     Branches.push tempDocsDir
 )
 
-Target "Release" DoNothing
+Target.create "Release" ignore
 
 // --------------------------------------------------------------------------------------
 // Run all targets by default. Invoke 'build <Target>' to override
 
-Target "All" DoNothing
+Target.create "All" ignore
 
 "Clean"
   ==> "AssemblyInfo"
   ==> "Build"
   ==> "RunTests"
-  =?> ("GenerateReferenceDocs",isLocalBuild)
-  =?> ("GenerateDocs",isLocalBuild)
+  =?> ("GenerateDocs", BuildServer.isLocalBuild)
   ==> "All"
-  =?> ("ReleaseDocs",isLocalBuild)
+  =?> ("ReleaseDocs", BuildServer.isLocalBuild)
 
 "All"
   ==> "NuGet"
 
 "CleanDocs"
   ==> "GenerateHelp"
-  ==> "GenerateReferenceDocs"
   ==> "GenerateDocs"
 
 "CleanDocs"
@@ -236,4 +258,4 @@ Target "All" DoNothing
 "Nuget"
   ==> "Release"
 
-RunTargetOrDefault "All"
+Target.runOrDefault "All"
