@@ -5,7 +5,7 @@ nuget Microsoft.NET.Test.Sdk
 nuget FsUnit
 nuget NUnit
 nuget NUnit.Runners
-nuget FSharp.Core
+nuget FSharp.Core >= 4.3.4
 nuget NUnit3TestAdapter
 nuget NETStandard.Library.NETFramework
 
