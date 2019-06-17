@@ -1,3 +1,7 @@
+#### 2.0.2 - 17.06.2019
+* Fix Nuget page is missing metadata - https://github.com/fsprojects/FSharp.Text.RegexProvider/issues/26
+* Https documentation page
+
 #### 2.0.1 - 12.06.2019
 * FIx FSharp.Core dependency version in nuget
 
