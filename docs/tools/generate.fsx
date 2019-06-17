@@ -60,7 +60,7 @@ let properties =
     { Name = "FSharp.Text.RegexProvider"
       Description = "A type provider for regular expressions."
       Author = "Steffen Forkmann"
-      GitHub = "http://github.com/fsprojects/FSharp.Text.RegexProvider"
+      GitHub = "https://github.com/fsprojects/FSharp.Text.RegexProvider"
       NuGet = "https://www.nuget.org/packages/FSharp.Text.RegexProvider" 
       Body = ""
       Root = "."}
@@ -84,10 +84,10 @@ let template t =
                          HTMLAttr.Content t.Description ]
                   meta [ Name "author"
                          HTMLAttr.Content t.Author ]
-                  script [ Src "http://code.jquery.com/jquery-1.8.0.js" ] [ ]
-                  script [ Src "http://code.jquery.com/ui/1.8.23/jquery-ui.js" ] [ ]
-                  script [ Src "http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js" ] [ ]
-                  link [ Href "http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css"
+                  script [ Src "https://code.jquery.com/jquery-1.8.0.js" ] [ ]
+                  script [ Src "https://code.jquery.com/ui/1.8.23/jquery-ui.js" ] [ ]
+                  script [ Src "https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js" ] [ ]
+                  link [ Href "https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css"
                          Rel "stylesheet" ]
                   link [ Type "text/css"
                          Rel "stylesheet"
@@ -100,7 +100,7 @@ let template t =
                     [ div [ Class "masthead" ]
                         [ ul [ Class "nav nav-pills pull-right" ]
                             [ li [ ]
-                                [ a [ Href "http://fsharp.org" ]
+                                [ a [ Href "https://fsharp.org" ]
                                     [ str "fsharp.org" ] ]
                               li [ ]
                                 [ a [ Href t.GitHub ]
