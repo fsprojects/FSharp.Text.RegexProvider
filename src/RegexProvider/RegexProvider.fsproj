@@ -27,12 +27,6 @@
     <None Include="paket.references" />
   </ItemGroup>
   <ItemGroup>
-    <!-- We only force the use of the F# 3.1 FSharp.Core to make sure this library continues to compile with F# 3.1. -->
-    <!-- Yes, people are still making type providers that need to load into F# 3.1 tooling (VS2013). -->
-    <!-- <PackageReference Include="FSharp.Core" Version="3.1.2.5" Condition="'$(TargetFramework)' == 'net45'" />
-    <PackageReference Include="FSharp.Core" Version="4.2.*" Condition="'$(TargetFramework)' == 'netstandard2.0'" /> -->
-  </ItemGroup>
-  <ItemGroup>
     <!-- These files are the facades necessary to run .NET Standard 2.0 components on .NET Framework 4.6.1 (.NET Framework 4.7 will -->
     <!-- come with these facades included). Because the type provider is a .NET Standard 2.0 component, the deployment of the type -->
     <!--  provider must include these facade DLLs if it is to run hosted inside an F# compiler executing using  .NET Framework 4.6.1 or Mono 5.0. -->
@@ -45,6 +39,7 @@
     <None Include="..\..\packages\NETStandard.Library.NETFramework\build\net461\lib\System.Runtime.dll" Condition="'$(TargetFramework)' == 'net461'">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="paket.template" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

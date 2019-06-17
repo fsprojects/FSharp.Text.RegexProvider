@@ -1,5 +1,5 @@
 (*** hide ***)
-#I "../../bin"
+#I "../../bin/netstandard2.0"
 
 (**
 FSharp.Text.RegexProvider

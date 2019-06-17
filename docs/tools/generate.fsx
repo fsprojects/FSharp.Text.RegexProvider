@@ -54,7 +54,8 @@ type Template =
       Author: string
       GitHub: string
       NuGet: string
-      Root: string }
+      Root: string
+      Tooltips: string }
 
 let properties =
     { Name = "FSharp.Text.RegexProvider"
@@ -63,7 +64,8 @@ let properties =
       GitHub = "https://github.com/fsprojects/FSharp.Text.RegexProvider"
       NuGet = "https://www.nuget.org/packages/FSharp.Text.RegexProvider" 
       Body = ""
-      Root = "."}
+      Root = "."
+      Tooltips = "" }
 
 let href t link =
     Href (t.Root + link)
@@ -141,7 +143,8 @@ let template t =
                                     Right "0"
                                     Border "0" ]
                             Src "https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png"
-                            Alt "Fork me on GitHub" ] ] ] ] ]
+                            Alt "Fork me on GitHub" ] ] 
+                  RawText t.Tooltips ] ] ]
 
 let write path html =
     use writer = System.IO.File.CreateText(path)
@@ -165,22 +168,30 @@ let compilerOptions =
          "-r:System.Runtime"
          :: Array.toList evaluationOptions)
 
-let parseFsx source =
-    let doc = 
-      
-      Literate.ParseScriptString(
-                  source, 
-                  compilerOptions = compilerOptions,
-                  fsiEvaluator = FSharp.Literate.FsiEvaluator(evaluationOptions))
-    FSharp.Literate.Literate.FormatLiterateNodes(doc, OutputKind.Html, "", true, true)
+let parseFsx path =
 
-let parseMd source =
     let doc = 
-      Literate.ParseMarkdownString(
-                  source, 
+      Literate.ParseScriptFile(
+                  path = path,
                   compilerOptions = compilerOptions,
                   fsiEvaluator = FSharp.Literate.FsiEvaluator(evaluationOptions))
-    FSharp.Literate.Literate.FormatLiterateNodes(doc, OutputKind.Html, "", true, true)
+    
+    let body = FSharp.Literate.Literate.FormatLiterateNodes(doc, OutputKind.Html, "", true, true)
+    for err in doc.Errors do
+        Printf.printfn "%A" err
+    body, body.FormattedTips
+    
+
+let parseMd path =
+    let doc = 
+      Literate.ParseMarkdownFile(
+                  path,
+                  compilerOptions = compilerOptions,
+                  fsiEvaluator = FSharp.Literate.FsiEvaluator(evaluationOptions))
+    let body = FSharp.Literate.Literate.FormatLiterateNodes(doc, OutputKind.Html, "", true, true)
+    for err in doc.Errors do
+        Printf.printfn "%A" err
+    body, body.FormattedTips
 
 let format (doc: LiterateDocument) =
     Formatting.format doc.MarkdownDocument true OutputKind.Html
@@ -195,12 +206,13 @@ let processFile outdir path  =
         | ".fsx" -> parseFsx
         | ".md" -> parseMd
         | ext -> failwithf "Unable to process doc for %s files" ext
+
+    let body, tips = 
+        parse path
     let t =
         { properties with
-            Body =
-                IO.File.ReadAllText(path)
-                |> parse
-                |> format }
+            Body = format body
+            Tooltips = tips }
     t 
     |> template
     |> write outfile
