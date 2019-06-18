@@ -41,7 +41,7 @@ PhoneRegex().TypedMatch("425-123-2345").AreaCode.Value
 // you can also get an option for simpler handling in case the rege doesn't match
 match PhoneRegex().TryTypedMatch("425-123-2345") with
 | Some m -> printfn "Phone number is %s" m.PhoneNumber.Value
-| None -> printfn "Phone number unaviable"
+| None -> printfn "Phone number unavailable"
 
 (**
 
