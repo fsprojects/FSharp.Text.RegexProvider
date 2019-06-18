@@ -24,6 +24,20 @@ module internal TypedRegex =
                         if noMethodPrefix then baseName
                         else sprintf "Typed%s" baseName
 
+                    //let groupType = runtimeType<Group>"GroupType" true
+
+                    //let tryValue =
+                    //    ProvidedProperty(
+                    //        propertyName = "TryValue",
+                    //        propertyType = optionType typeof<string>,
+                    //        getterCode = (fun args -> 
+                    //            <@@ if (%%args.[0]:Group).Success then
+                    //                    Some (%%args.[0]:Group).Value
+                    //                else
+                    //                    None @@>))
+                    //tryValue.AddXmlDoc("Gets the captured substring from the input string or None if the group did not match")
+                    //groupType.AddMember tryValue
+
                     let matchType = runtimeType<Match>"MatchType" true
 
                     for group in Regex(pattern).GetGroupNames() do
@@ -49,6 +63,7 @@ module internal TypedRegex =
                     let regexType = erasedType<Regex> thisAssembly rootNamespace typeName true
                     regexType.AddXmlDoc "A strongly typed interface to the regular expression '%s'"
 
+                    //regexType.AddMember groupType
                     regexType.AddMember matchType
 
                     let isMatchMethod =
@@ -71,6 +86,21 @@ module internal TypedRegex =
                     matchMethod.AddXmlDoc "Searches the specified input string for the first occurrence of this regular expression"
 
                     regexType.AddMember matchMethod
+
+                    let tryMatchMethod =
+                        ProvidedMethod(
+                            methodName = "Try" + getMethodName "Match",
+                            parameters = [ProvidedParameter("input", typeof<string>)],
+                            returnType = optionType matchType,
+                            invokeCode = (fun args -> 
+                                <@@ let m = (%%args.[0]:Regex).Match(%%args.[1])
+                                    if m.Success then
+                                        Some m
+                                    else
+                                        None @@>))
+                    tryMatchMethod.AddXmlDoc "Searches the specified input string for the first occurrence of this regular expression"
+
+                    regexType.AddMember tryMatchMethod
 
                     let matchesMethod =
                         ProvidedMethod(
@@ -104,6 +134,7 @@ module internal TypedRegex =
 [<TypeProvider>]
 type public RegexProvider(cfg:TypeProviderConfig) =
     inherit TypeProviderForNamespaces(cfg, rootNamespace, [TypedRegex.typedRegex()])
+
 
 [<TypeProviderAssembly>]
 do ()

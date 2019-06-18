@@ -19,6 +19,7 @@
   <ItemGroup>
     <Compile Include="FsUnit.fs" />
     <Compile Include="RegexProvider.Tests.fs" />
+    <Compile Include="RegexExtensions.Tests.fs" />
     <None Include="paket.references" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />

@@ -1,4 +1,4 @@
-(*** hide ***)
+﻿(*** hide ***)
 #I "../../bin/netstandard2.0"
 
 (**
@@ -26,6 +26,7 @@ This example demonstrates the use of the type provider:
 *)
 // reference the type provider dll
 #r "FSharp.Text.RegexProvider.dll"
+open System.Globalization
 open FSharp.Text.RegexProvider
 
 // Let the type provider do its work
@@ -36,6 +37,11 @@ type PhoneRegex = Regex< @"(?<AreaCode>^\d{3})-(?<PhoneNumber>\d{3}-\d{4}$)" >
 PhoneRegex().TypedMatch("425-123-2345").AreaCode.Value
 
 // [fsi:val it : string = "425"]
+
+// you can also get an option for simpler handling in case the rege doesn't match
+match PhoneRegex().TryTypedMatch("425-123-2345") with
+| Some m -> printfn "Phone number is %s" m.PhoneNumber.Value
+| None -> printfn "Phone number unaviable"
 
 (**
 
@@ -53,6 +59,44 @@ MultiplePhoneRegex().Matches("425-123-2345, 426-123-2346, 427-123-2347")
 |> List.ofSeq
 
 // [fsi:val it : string list = ["425"; "426"; "427"]]
+
+(**
+To ease the conversion of matched groups to primitives types, the assembly provides
+the FSharp.Text.RegexExtensions module. It contains extensions methods to convert matched groups
+to `int`, `uint32`, `int64`, `uint64`, `int16`, `uint16`, `byte`, `sbyte`, 
+`float`, `single`, `decimal`, `DateTime`, `DateTimeOffset`, `TimeSpan`, `bool` and `char`:
+*)
+
+open FSharp.Text.RegexExtensions
+
+type TempRegex = Regex< @"^(?<Temperature>[\d\.]+)\s*°C$", noMethodPrefix = true >
+
+// the simplest extension gets an option string depending on Success
+TempRegex().Match("21.3°C").Temperature.TryValue
+// [fsi:val it : string option = Some "21.3"]
+
+// conversion to decimal in the happy case
+TempRegex().Match("21.3°C").Temperature.AsDecimal
+// [fsi:val it : decimal = 21.3M]
+
+// When not sure whether the match occured or the format is always correct use TryAs...
+// here it's successful
+TempRegex().Match("21.3°C").Temperature.TryAsDecimal
+// [fsi:val it : decimal option = Some 21.3M]
+
+// here it returns None because it's not °C, so it doesn't match
+TempRegex().Match("21.3°F").Temperature.TryAsDecimal
+// [fsi:val it : decimal option = None]
+
+// here it matches, but it is not a valid decimal
+TempRegex().Match("21.3.5°F").Temperature.TryAsDecimal
+// [fsi:val it : decimal option = None]
+
+type DateRegex = Regex< @"^Date:\s*(?<Date>\d{4}-\d{2}-\d{2})$", noMethodPrefix = true >
+
+// for dates, specify a format, especially for local or utc conversion
+DateRegex().Match("Date: 2019-06-18").Date.AsDateTime(DateTimeStyles.AssumeUniversal|||DateTimeStyles.AdjustToUniversal)
+// [fsi:val it : System.DateTime = 18/06/2019 00:00:00]
 
 (**
 

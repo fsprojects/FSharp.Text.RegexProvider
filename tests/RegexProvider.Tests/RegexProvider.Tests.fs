@@ -80,3 +80,18 @@ let ``Inline function can be called on several typed regexes``() =
     let wordExtractor2 = extractWords (WordRegex2())
     let words2 = wordExtractor2 input
     words2 |> should equal ["fox";"dog"]
+
+
+[<Test>] 
+let ``Can return PhoneNumber property in simple phone number with TryMatch``() =
+    PhoneRegex().TryMatch("425-123-2345")
+    |> Option.map (fun p -> p.PhoneNumber.Value)
+    |> should equal (Some "123-2345")
+
+
+[<Test>] 
+let ``Can return None with TryMatch``() =
+    PhoneRegex().TryMatch("425x123x2345")
+    |> Option.map (fun p -> p.PhoneNumber.Value)
+    |> shouldEqual None
+
