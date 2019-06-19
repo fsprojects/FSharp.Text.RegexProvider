@@ -1,9 +1,9 @@
-#### 2.1.0
+#### 2.1.0 - 19.06.2019
 * Add TryTypedMatch that returns an option - https://github.com/fsprojects/FSharp.Text.RegexProvider/issues/20
 * Add extension methods on Group to easily and safely convert to primitive types
-* Add TypedReplace with typed evaluator
+* Add TypedReplace with typed evaluator - https://github.com/fsprojects/FSharp.Text.RegexProvider/issues/5
 * Make type set local to provider instance to have consitent type names over rebuilds
-* Add overload for Match and Matches that takes starting position and number of occurence
+* Add overload for Match and Matches that takes starting position and number of occurence - https://github.com/fsprojects/FSharp.Text.RegexProvider/issues/19
 * Add ctor overload that takes a timeout
 
 #### 2.0.2 - 17.06.2019
