@@ -21,6 +21,11 @@ let ``The regex options are passed``() =
     PhoneRegex(RegexOptions.Compiled).Options |> should equal RegexOptions.Compiled
 
 [<Test>] 
+let ``The match timeout is passed``() =      
+    PhoneRegex(RegexOptions.Compiled, System.TimeSpan.FromSeconds 2.).MatchTimeout 
+    |> should equal (System.TimeSpan.FromSeconds 2.)
+    
+[<Test>] 
 let ``Can call typed CompleteMatch function``() =      
     PhoneRegex().Match("425-123-2345").CompleteMatch.Value
     |> should equal "425-123-2345"
@@ -43,6 +48,12 @@ let ``Can return multiple matches``() =
     |> List.ofSeq
     |> should equal ["425"; "426"; "427"]
 
+[<Test>]
+let ``Can return multiple matches from starting positiong``() =
+    MultiplePhoneRegex().Matches("425-123-2345, 426-123-2346, 427-123-2347", 13 )
+    |> Seq.map (fun x -> x.AreaCode.Value)
+    |> List.ofSeq
+    |> should equal ["426"; "427"]
 
 [<Test>]
 let ``Can return next matches``() =
@@ -94,4 +105,57 @@ let ``Can return None with TryMatch``() =
     PhoneRegex().TryMatch("425x123x2345")
     |> Option.map (fun p -> p.PhoneNumber.Value)
     |> shouldEqual None
+
+[<Test>]
+let ``Can match starting at position`` =
+    let word = WordRegex().TypedMatch("The fox jumps over the lazy dog", 3)
+    word.Word.Value
+    |> should equal ("fox")
+
+
+[<Test>]
+let ``Can match starting at position with given length`` =
+    let word = WordRegex().TypedMatch("The fox jumps over the lazy dog", 3,3)
+    word.Word.Value
+    |> should equal ("fo")
+
+
+[<Test>]
+let ``Can try match starting at position`` =
+    let word = 
+        WordRegex().TryTypedMatch("The fox jumps over the lazy dog", 3)
+        |> Option.map (fun m -> m.Word.Value)
+
+    word
+    |> should equal (Some "fox")
+
+
+[<Test>]
+let ``Can try match starting at position with given length`` =
+    let word = 
+        WordRegex().TryTypedMatch("The fox jumps over the lazy dog", 3,3)
+        |> Option.map (fun m -> m.Word.Value)
+
+    word
+    |> should equal (Some "fo")
+
+[<Test>]
+let ``Replace can take typed match``() =
+    let input = @"The fox jumps over the lazy dog"
+    WordRegex().TypedReplace(input, fun m -> string m.Word.Value.Length)
+    |> shouldEqual "3 3 5 4 3 4 3"
+
+[<Test>]
+let ``Replace can take typed match with specified count``() =
+    let input = @"The fox jumps over the lazy dog"
+    WordRegex().TypedReplace(input, (fun m -> string m.Word.Value.Length), 3)
+    |> shouldEqual "3 3 5 over the lazy dog"
+
+
+[<Test>]
+let ``Replace can take typed match with specified count and starting position``() =
+    let input = @"The fox jumps over the lazy dog"
+    WordRegex().TypedReplace(input, (fun m -> string m.Word.Value.Length), 3, 4)
+    |> shouldEqual "The 3 5 4 the lazy dog"
+
 

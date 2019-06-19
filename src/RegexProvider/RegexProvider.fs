@@ -19,26 +19,13 @@ module internal TypedRegex =
             instantiationFunction = (fun typeName parameterValues ->
                 match parameterValues with 
                 | [| :? string as pattern; :? bool as noMethodPrefix |] ->
+                    let typeSet = createTypeSet()
 
                     let getMethodName baseName =
                         if noMethodPrefix then baseName
                         else sprintf "Typed%s" baseName
 
-                    //let groupType = runtimeType<Group>"GroupType" true
-
-                    //let tryValue =
-                    //    ProvidedProperty(
-                    //        propertyName = "TryValue",
-                    //        propertyType = optionType typeof<string>,
-                    //        getterCode = (fun args -> 
-                    //            <@@ if (%%args.[0]:Group).Success then
-                    //                    Some (%%args.[0]:Group).Value
-                    //                else
-                    //                    None @@>))
-                    //tryValue.AddXmlDoc("Gets the captured substring from the input string or None if the group did not match")
-                    //groupType.AddMember tryValue
-
-                    let matchType = runtimeType<Match>"MatchType" true
+                    let matchType = runtimeType<Match>"MatchType" true typeSet
 
                     for group in Regex(pattern).GetGroupNames() do
                         let property = 
@@ -63,7 +50,6 @@ module internal TypedRegex =
                     let regexType = erasedType<Regex> thisAssembly rootNamespace typeName true
                     regexType.AddXmlDoc "A strongly typed interface to the regular expression '%s'"
 
-                    //regexType.AddMember groupType
                     regexType.AddMember matchType
 
                     let isMatchMethod =
@@ -86,6 +72,29 @@ module internal TypedRegex =
                     matchMethod.AddXmlDoc "Searches the specified input string for the first occurrence of this regular expression"
 
                     regexType.AddMember matchMethod
+                    
+                    let matchStartAtMethod =
+                        ProvidedMethod(
+                            methodName = getMethodName "Match",
+                            parameters = [ProvidedParameter("input", typeof<string>)
+                                          ProvidedParameter("startat", typeof<int>)],
+                            returnType = matchType,
+                            invokeCode = (fun args -> <@@ (%%args.[0]:Regex).Match(%%args.[1], %%args.[2]) @@>))
+                    matchStartAtMethod.AddXmlDoc "Searches the specified input string for the first occurrence of this regular expression, beginning at the specified starting position."
+
+                    regexType.AddMember matchStartAtMethod
+
+                    let matchBeginningLengthMethod =
+                        ProvidedMethod(
+                            methodName = getMethodName "Match",
+                            parameters = [ProvidedParameter("input", typeof<string>)
+                                          ProvidedParameter("beginning", typeof<int>)
+                                          ProvidedParameter("length",typeof<int>)],
+                            returnType = matchType,
+                            invokeCode = (fun args -> <@@ (%%args.[0]:Regex).Match(%%args.[1], %%args.[2], %%args.[3] ) @@>))
+                    matchBeginningLengthMethod.AddXmlDoc "Searches the specified input string for the first occurrence of this regular expression, beginning at the specified starting position and searching only the specified number of characters."
+
+                    regexType.AddMember matchBeginningLengthMethod
 
                     let tryMatchMethod =
                         ProvidedMethod(
@@ -98,9 +107,42 @@ module internal TypedRegex =
                                         Some m
                                     else
                                         None @@>))
-                    tryMatchMethod.AddXmlDoc "Searches the specified input string for the first occurrence of this regular expression"
+                    tryMatchMethod.AddXmlDoc "Searches the specified input string for the first occurrence of this regular expression."
 
                     regexType.AddMember tryMatchMethod
+
+                    let tryMatchStartAtMethod =
+                        ProvidedMethod(
+                            methodName = "Try" + getMethodName "Match",
+                            parameters = [ProvidedParameter("input", typeof<string>)
+                                          ProvidedParameter("startat", typeof<int>)],
+                            returnType = optionType matchType,
+                            invokeCode = (fun args -> 
+                                <@@ let m = (%%args.[0]:Regex).Match(%%args.[1], %%args.[2])
+                                    if m.Success then
+                                        Some m
+                                    else
+                                        None @@>))
+                    tryMatchStartAtMethod.AddXmlDoc "Searches the specified input string for the first occurrence of this regular expression, beginning at the specified starting position."
+
+                    regexType.AddMember tryMatchStartAtMethod
+
+                    let tryMatchBeginningLengthMethod =
+                        ProvidedMethod(
+                            methodName = "Try" + getMethodName "Match",
+                            parameters = [ProvidedParameter("input", typeof<string>)
+                                          ProvidedParameter("beginning", typeof<int>)
+                                          ProvidedParameter("length", typeof<int>)],
+                            returnType = optionType matchType,
+                            invokeCode = (fun args -> 
+                                <@@ let m = (%%args.[0]:Regex).Match(%%args.[1], %%args.[2], %%args.[3])
+                                    if m.Success then
+                                        Some m
+                                    else
+                                        None @@>))
+                    tryMatchBeginningLengthMethod.AddXmlDoc "Searches the specified input string for the first occurrence of this regular expression, beginning at the specified starting position and searching only the specified number of characters."
+
+                    regexType.AddMember tryMatchBeginningLengthMethod
 
                     let matchesMethod =
                         ProvidedMethod(
@@ -108,9 +150,56 @@ module internal TypedRegex =
                             parameters = [ProvidedParameter("input", typeof<string>)],
                             returnType = seqType matchType,
                             invokeCode = (fun args -> <@@ (%%args.[0]:Regex).Matches(%%args.[1]) |> Seq.cast<Match> @@>))
-                    matchesMethod.AddXmlDoc "Searches the specified input string for all occurrences of this regular expression"
+                    matchesMethod.AddXmlDoc "Searches the specified input string for all occurrences of this regular expression."
 
                     regexType.AddMember matchesMethod
+
+                    let matchesStartAtMethod =
+                        ProvidedMethod(
+                            methodName = getMethodName "Matches",
+                            parameters = [ProvidedParameter("input", typeof<string>)
+                                          ProvidedParameter("startat", typeof<int>)],
+                            returnType = seqType matchType,
+                            invokeCode = (fun args -> <@@ (%%args.[0]:Regex).Matches(%%args.[1], %%args.[2]) |> Seq.cast<Match> @@>))
+                    matchesStartAtMethod.AddXmlDoc "Searches the specified input string for all occurrences of this regular expression, beginning at the specified starting position in the string."
+
+                    regexType.AddMember matchesStartAtMethod
+                    
+                    let replaceMethod =
+                        ProvidedMethod(
+                            methodName = getMethodName "Replace",
+                            parameters = [ProvidedParameter("input", typeof<string>)
+                                          ProvidedParameter("evaluator", funType matchType typeof<string>)],
+                            returnType = typeof<string>,
+                            invokeCode = (fun args -> <@@ (%%args.[0]:Regex).Replace(%%args.[1], MatchEvaluator(%%args.[2] )) @@>))
+                    replaceMethod.AddXmlDoc "In a specified input string, replaces all strings that match a specified regular expression with a string returned by an evaluator function."
+                    
+                    regexType.AddMember replaceMethod
+                
+                    let replaceCountMethod =
+                        ProvidedMethod(
+                            methodName = getMethodName "Replace",
+                            parameters = [ProvidedParameter("input", typeof<string>)
+                                          ProvidedParameter("evaluator", funType matchType typeof<string>)
+                                          ProvidedParameter("count", typeof<int>)],
+                            returnType = typeof<string>,
+                            invokeCode = (fun args -> <@@ (%%args.[0]:Regex).Replace(%%args.[1], MatchEvaluator(%%args.[2] ), %%args.[3]) @@>))
+                    replaceCountMethod.AddXmlDoc "In a specified input string, replaces a specified maximum number of strings that match a specified regular expression with a string returned by an evaluator function."
+                    
+                    regexType.AddMember replaceCountMethod
+
+                    let replaceCountStartAtMethod =
+                        ProvidedMethod(
+                            methodName = getMethodName "Replace",
+                            parameters = [ProvidedParameter("input", typeof<string>)
+                                          ProvidedParameter("evaluator", funType matchType typeof<string>)
+                                          ProvidedParameter("count", typeof<int>)
+                                          ProvidedParameter("startat", typeof<int>)],
+                            returnType = typeof<string>,
+                            invokeCode = (fun args -> <@@ (%%args.[0]:Regex).Replace(%%args.[1], MatchEvaluator(%%args.[2] ),%%args.[3], %%args.[4]) @@>))
+                    replaceCountStartAtMethod.AddXmlDoc "In a specified input substring, replaces a specified maximum number of strings that match a specified regular expression with a string returned by an evaluator function."
+                    
+                    regexType.AddMember replaceCountStartAtMethod
 
                     let ctor = 
                         ProvidedConstructor(
@@ -125,6 +214,14 @@ module internal TypedRegex =
                             parameters = [ProvidedParameter("options", typeof<RegexOptions>)],
                             invokeCode = (fun args -> <@@ Regex(pattern, %%args.[0]) @@>))
                     ctor.AddXmlDoc "Initializes a regular expression instance, with options that modify the pattern."                
+                    regexType.AddMember ctor
+
+                    let ctor =
+                        ProvidedConstructor(
+                            parameters = [ProvidedParameter("options", typeof<RegexOptions>)
+                                          ProvidedParameter("matchTimeout", typeof<TimeSpan>)],
+                            invokeCode = (fun args -> <@@ Regex(pattern, %%args.[0], %%args.[1]) @@>))
+                    ctor.AddXmlDoc "Initializes a regular expression instance, with options that modify the pattern and a value that specifies how long a pattern matching method should attempt a match before it times out."                
                     regexType.AddMember ctor
 
                     regexType
