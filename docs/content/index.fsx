@@ -99,6 +99,33 @@ DateRegex().Match("Date: 2019-06-18").Date.AsDateTime(DateTimeStyles.AssumeUnive
 // [fsi:val it : System.DateTime = 18/06/2019 00:00:00]
 
 (**
+`TypedReplace` can be used with a match evaluator that takes a MatchType as an input.
+Here, the type of m is `NumberRegex.MatchType`, and has a Number property infered from the regular expression :
+*)
+
+type NumberRegex = Regex< @"(?<Number>\d+)" >
+
+let song = "
+    1, 2 buckle my shoe
+    3, 4 knock on the door
+    5, 6 pick up sticks
+    9, 10 a big fat hen."
+
+let numbers = 
+    Map.ofList
+        [ 1, "one"; 2, "two"; 3, "three"; 4, "four"; 5, "five"
+          6, "six"; 7, "seven"; 8, "eight"; 9, "nine"; 10, "ten"]
+
+// using typed replace, you can use typed match in the provided function
+NumberRegex().TypedReplace(song, fun m -> numbers.[m.Number.AsInt] )
+// [fsi:val it : string = ]
+// [fsi:"]
+// [fsi:    one, two buckle my shoe]
+// [fsi:    three, four knock on the door]
+// [fsi:    five, six pick up sticks]
+// [fsi:    nine, ten a big fat hen."]
+
+(**
 
 Contributing and copyright
 --------------------------

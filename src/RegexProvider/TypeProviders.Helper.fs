@@ -101,13 +101,14 @@ module internal Helper =
     let erasedType<'T> assemblyName rootNamespace typeName hideObjectMethods = 
         ProvidedTypeDefinition(assemblyName, rootNamespace, typeName, Some(typeof<'T>), hideObjectMethods = hideObjectMethods)
 
-    let generalTypeSet = System.Collections.Concurrent.ConcurrentDictionary()
+    let createTypeSet() = System.Collections.Concurrent.ConcurrentDictionary<_, unit>()
 
-    let runtimeType<'T> typeName hideObjectMethods = ProvidedTypeDefinition(niceName generalTypeSet typeName, Some typeof<'T>, hideObjectMethods=hideObjectMethods)
+    let runtimeType<'T> typeName hideObjectMethods typeSet = ProvidedTypeDefinition(niceName typeSet typeName, Some typeof<'T>, hideObjectMethods=hideObjectMethods)
 
     let seqType ty = typedefof<seq<_>>.MakeGenericType[| ty |]
     let listType ty = typedefof<list<_>>.MakeGenericType[| ty |]
     let optionType ty = typedefof<option<_>>.MakeGenericType[| ty |]
+    let funType ty tr = typedefof<_ -> _>.MakeGenericType[| ty; tr |]
 
     // Get the assembly and namespace used to house the provided types
     let thisAssembly = System.Reflection.Assembly.GetExecutingAssembly()
