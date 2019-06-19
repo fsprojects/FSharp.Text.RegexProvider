@@ -6,7 +6,7 @@ nuget FsUnit
 nuget NUnit
 nuget NUnit.Runners
 nuget FSharp.Core >= 4.3.4
-nuget NUnit3TestAdapter
+nuget NUnit3TestAdapter version_in_path: true
 nuget NETStandard.Library.NETFramework
 
 github fsprojects/FSharp.TypeProviders.SDK src/ProvidedTypes.fsi

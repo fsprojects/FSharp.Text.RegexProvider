@@ -1,3 +1,7 @@
+#### 2.1.0
+* Add TryTypedMatch that returns an option - https://github.com/fsprojects/FSharp.Text.RegexProvider/issues/20
+* Add extension methods on Group to easily and safely convert to primitive types
+
 #### 2.0.2 - 17.06.2019
 * Fix Nuget page is missing metadata - https://github.com/fsprojects/FSharp.Text.RegexProvider/issues/26
 * Https documentation page
